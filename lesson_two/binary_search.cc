@@ -2,15 +2,18 @@
 #include <cassert>
 
 int binaryS(int arr[], int tar, int num ){
-    int total, p;
-    total=num;
-    int low=0;
+    int high, p;
+    high=num;
     while(true){
-        p=total/2;
+        //try to identify p th number 
+        p=high/2;
+        //if the target was smaller than the current numb
         if (tar<arr[p]){
-            total=p;
+            high=p;
+        //if the target was bigger than the current num
         } else if (tar>arr[p]){
-            total=total+p;
+            high=high+p;
+        //if the current num is the target 
         } else if (tar==arr[p]){
             return p;
         }

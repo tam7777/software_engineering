@@ -1,3 +1,5 @@
+2 files in lesson_one. hello_world.cc prints out "hello world" and list1.cc creates a linked list and prints from 1 to 100. Details are commented out in the code.
+
 hello_world.cc
 
   Input:None

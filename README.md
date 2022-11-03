@@ -5,3 +5,5 @@ Implementation of algorithms in C++
 lesson_one-  print and linked list
 
 lesson_two-  binar search and hash
+
+lesson_three- count sort, quick sort, insertion sort

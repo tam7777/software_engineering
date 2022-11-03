@@ -1,4 +1,4 @@
-binary_search.cc
+##binary_search.cc
   
   Explanation: Created a program that creates a numerical
   data set from the first argument and finds the 2nd argument 
@@ -9,7 +9,7 @@ binary_search.cc
   Output: The number you're looking for is 7th number
           
 
-hash.cc
+##hash.cc
 
   Explnation:Seprate Chaining. Created a program that creates a numerical data set 
   from the first argument and finds the 2nd argument from the data 

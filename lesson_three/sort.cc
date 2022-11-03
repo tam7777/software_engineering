@@ -84,26 +84,27 @@ void iCannotBelieve()
 
 void insertSort()
 {
-  std::vector<int>& array = Input;
-  // begin
+  vector<int>& arr = Input;
+
   resetInput();
+
+  int n=arr.size();
+
   measure.start();
 
-  int size=(int)OriginalInput.size();
-
-  for (int j=1; j<size; j++){
-    int key=array[j];
+  for (int j=1; j<n; j++){
+    int key=arr[j];
     int i=j-1;
-    while(i>=0 && array[i]>key){
-      array[i+1]=array[i];
+    while(i>=0 && arr[i]>key){
+      arr[i+1]=arr[i];
       i=i-1;
     }
-    array[i+1]=key;
+    arr[i+1]=key;
   }
   
   // end
   measure.end();
-  check_vec(array);
+  check_vec(arr);
   measure.print_elapsed_time("Insert: ");
 }
 
@@ -160,19 +161,47 @@ void quickSortStart() {
 }
 
 // The main function that sort
-void countSort()
+void countSort(int k)
 {
   vector<int>& arr = Input;
   resetInput();
-  int* output = new int[arr.size()];
- 
+  int n=arr.size();
+  int* output = new int[n];
   // Create a count array to store count of individual
   // number and initialize count array as 0
-  int* count = new int[RANGE + 1];
-  memset(count, 0, sizeof(int) * (RANGE+1));
-
+  //num of count is insanely huge defined RANGE
+  int* count = new int[k];
+  //set all num in count 0. 
+  //memset(pointer(if you put +2 then 2 byte from the start), num, byte(how long write the num))
+  //memset(count, 0, sizeof(int) * (RANGE+1));
+  // largest num  
+  
   measure.start();
-  /* ... */
+
+  for(int i=0; i<k;i++){
+    count[i]=0;
+  }
+
+  //input num of element i in count array
+  for(int i=0;i<n;i++){
+    count[arr[i]]+=1;
+  }
+
+
+  //add the previous count array number to complete array
+  for(int i=1;i<=k;i++){
+    count[i]=count[i]+count[i-1];
+  }
+
+  for(int i=0;i<n;i++){
+    output[count[arr[i]]-1]=arr[i];//place the count num into the output
+    count[arr[i]]=count[arr[i]]-1;//decrease the count num for i
+  }
+
+  for(int i=0;arr[i];i++){
+    arr[i]=output[i];
+  }
+
   measure.end();
 
   free(count);
@@ -186,8 +215,10 @@ int getMax(std::vector<int>& arr, int n)
 {
   int mx = arr[0];
   for (int i = 1; i < n; i++)
+  {
     if (arr[i] > mx)
       mx = arr[i];
+  }
   return mx;
 }
 
@@ -215,9 +246,9 @@ int main(int argc, char *argv[])
   init(argc, argv);
 
   insertSort();
-  //countSort();
   quickSortStart();  
-  //defaultSort();
+  defaultSort();
+  countSort(atoi(argv[1]));
 
   return 0;
 }

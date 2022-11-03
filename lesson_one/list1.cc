@@ -12,9 +12,11 @@ int data;
 };
 
 int main(){
+    //create the first node
     struct list* h=new list;
     struct list* s=h;
 
+//create a list 100 times
 for (int i=0; i<=100; i++){
   //add number to list
     s->data=i;

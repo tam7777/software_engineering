@@ -27,12 +27,3 @@
           6 is 15
           7 is 7
           8 is 2
-
-
-# git-workshop
-これは、中澤研2020年春学期講義 **GitHub実践講座** のレポジトリです。
-
-## What you'll learn
-- コンフリクトについて
-- コンフリクトの解消方法
-- Pull Requestの出し方

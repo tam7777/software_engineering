@@ -116,37 +116,64 @@ alloc_leaf(NODE *parent)
 
 NODE *
 insert_in_parent(NODE *leaf,int key, NODE *fleaf)
-{
+{   
+	int i;
 	if(leaf==Root){//if leaf is the root, leaf split
 		NODE *root;//create new root candidate
 		root->key[0]=key;//root shold contain N,K,N
-		root->chi[0]=&leaf;
-		root->chi[1]=&fleaf;
+		root->chi[0]=leaf;
+		root->chi[1]=fleaf;
 		root->nkey++;
 		Root =root;//make root the Root and return 
 		return root;
 	}
-	//NODE *p;
+	NODE *p;
 	p=leaf->parent;//let p=parent(N)
 	if(p->chi[N-1]==NULL){//if p has less then n pointers, if p has the space to put key&ptr
-		insert(key, fleaf);// insert (K', N')
+		for(int i=0; i<p->nkey; i++){// insert (K', N') to p
+			if(p->chi[i]==leaf) break;
+		}
+		p->chi[i+1]=fleaf;
+		p->key[i]=key;
+		p->nkey++;
 	}else{
 		TEMP *mem;
-		for (int i=0; i<p->nkey; i++){
+		for (i=0; i<p->nkey; i++){
 			mem->key[i]=p->key[i];
 			mem->chi[i]=p->chi[i];
-			mem->nkey++
+			mem->nkey++;
 		}//copy p to a block of memory capable of P and (K&N)
-		insert(key,fleaf);//insert key and fleaf into mem
 
-		for(int i=0; i<p->nkey; i++){//erase p the key and ptr
+		for(i=0; i<mem->nkey; i++){//insert key and fleaf into mem
+			if(mem->chi[i]==leaf) break;
+		}
+		mem->chi[i+1]=fleaf;
+		mem->key[i]=key;
+		mem->nkey++;		
+
+		for(i=0; i<p->nkey; i++){//erase p the key and ptr
 			p->key[i]=0;
 			p->chi[i]=NULL;
 		}
 		p->nkey=0;
 
-	}
+		NODE *fp;
+		for(i=0; i<(mem->nkey+1)/2; i++){//copt TP[n+1/2]to T
+			p->key[i]=mem->key[i];
+			p->chi[i]=mem->chi[i];
+			p->nkey++;
+		}
 
+		int ffkey=mem->key[(mem->nkey+1)/2];//Let K = T.K(n+1)/2
+
+		for(i=((mem->nkey+1)/2)+1; i<mem->nkey+1; i++){//copt TP[n+1/2]to T
+			fp->key[i]=mem->key[i];
+			fp->chi[i]=mem->chi[i];
+			fp->nkey++;
+		}	
+		insert_in_parent(p,ffkey,fp);
+	}
+	return 0;
 }
 
 void 
@@ -179,7 +206,7 @@ insert(int key, DATA *data)
 
 		insert_in_t(t,key,data);//insert new ket & ptr to t
 		fleaf->chi[N-1]=leaf->chi[N-1];//set L'Pn=LPn
-		leaf->chi[N-1]=&fleaf;//set LPn=L'
+		leaf->chi[N-1]=fleaf;//set LPn=L'
 
 		for(int i=0; i<leaf->nkey; i++){//erase L the key and ptr
 			leaf->key[i]=0;

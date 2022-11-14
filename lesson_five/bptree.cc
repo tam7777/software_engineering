@@ -162,10 +162,6 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		p->nkey++;
 	}
 
-	cout<<p->nkey<<endl;
-	if (p->chi[0]==NULL){
-		cout<<"hi"<<endl;
-	}
 /*
 	if(p->nkey>=(N-2)){//if p has less then n pointers, if p has the space to put key&ptr
 		for(int i=0; i<p->nkey; i++){// insert (K', N') to p
@@ -253,9 +249,10 @@ insert(int key, DATA *data)
 		
 		insert_in_t(temp,key,data);//insert new ket & ptr to t
 
-		fleaf->chi[N-1]=leaf->chi[N-1];//set L'Pn=LPn
-		leaf->chi[N-1]=fleaf;//set LPn=L'
-		
+		fleaf->chi[N]=leaf->chi[N];//set L'Pn=LPn
+		leaf->chi[N]=fleaf;//set LPn=L'
+		fleaf->isLeaf=true;
+
 		for(int i=0; i<leaf->nkey; i++){//erase L
 			leaf->key[i]=0;
 			leaf->chi[i]=NULL;

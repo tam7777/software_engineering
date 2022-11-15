@@ -55,6 +55,7 @@ insert_in_leaf(NODE *leaf, int key, DATA *data)
 		} //nkey is bigger than the position of the key[45,NULL,NULL] nkey=1
 		leaf->key[0] = key;
 		leaf->chi[0] = (NODE *)data;
+
 	}
 	else {
 		for (i = 0; i < leaf->nkey; i++) {
@@ -115,7 +116,7 @@ alloc_leaf(NODE *parent)
 }
 
 TEMP *
-alloc_temp(NODE *parent)
+alloc_temp()
 {
 	TEMP *temp;
 	if (!(temp = (TEMP *)calloc(1, sizeof(TEMP)))) ERR;
@@ -144,10 +145,10 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		NODE *root;//create new root candidate
 		root=alloc_root(NULL);
 		root->key[0]=key;//root shold contain N,K,N
-		root->chi[0]=leaf;
-		leaf->parent=root;
-		root->chi[1]=fleaf;
-		fleaf->parent=fleaf;
+		root->chi[0]=(NODE *) leaf;
+		leaf->parent=(NODE *) root;
+		root->chi[1]=(NODE *) fleaf;
+		fleaf->parent=(NODE *) root;
 		root->nkey++;
 		Root =root;//make root the Root and return 
 		return root;
@@ -155,22 +156,21 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 	
 	NODE *p;
 	p=alloc_root(NULL);
-	leaf->parent=p;//let p=parent(N)
-	for (int i=0; i<Root->nkey;i++){
-		p->key[i]=Root->key[i];
-		p->chi[i]=Root->chi[i];
-		p->nkey++;
+	p=(NODE *) leaf->parent;//create p that is the parent of the leaf
+	p->nkey=2;
+
+
+	if(p->nkey<(N-1)){//if p has less then n pointers, if p has the space to put key&ptr
+		for(i=0; i<p->nkey; i++){// insert (K', N') to p
+			if(leaf->key[0]==p->key[i]) break;
+		}
+		
+		p->chi[i+1]=(NODE *) fleaf;
+		p->key[i+1]=key;
+
 	}
 
-/*
-	if(p->nkey>=(N-2)){//if p has less then n pointers, if p has the space to put key&ptr
-		for(int i=0; i<p->nkey; i++){// insert (K', N') to p
-			if(p->chi[i]==leaf) break;
-		}
-		p->chi[i+1]=fleaf;
-		p->key[i]=key;
-		p->nkey++;
-	}
+	/*
 	
 	else{
 		TEMP *mem;
@@ -239,7 +239,7 @@ insert(int key, DATA *data)
 		fleaf=alloc_leaf(NULL);
 		
 		TEMP* temp;//create a temporary memory that can hold n pairs
-		temp=alloc_temp(NULL);
+		temp=alloc_temp();
 		
 		for(int i=0; i<leaf->nkey; i++){
 			temp->key[i]=leaf->key[i];
@@ -250,8 +250,7 @@ insert(int key, DATA *data)
 		insert_in_t(temp,key,data);//insert new ket & ptr to t
 
 		fleaf->chi[N]=leaf->chi[N];//set L'Pn=LPn
-		leaf->chi[N]=fleaf;//set LPn=L'
-		fleaf->isLeaf=true;
+		leaf->chi[N]=(NODE *) fleaf;//set LPn=L'
 
 		for(int i=0; i<leaf->nkey; i++){//erase L
 			leaf->key[i]=0;

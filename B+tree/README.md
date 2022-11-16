@@ -3,7 +3,7 @@
 Explanation: B+ tree with insertion, leaf split and non-leaf split. Detailed explanation commented out on the code. "Key:" is the input, returns a list of the leaf.
 Numbers in bracket is the number in a leaf, the number between brackets are the key of the root node that indicates which data is where.
 
-Key: 1
+Key: 1 /n
 [1]
 Key: 2
 [1 2]

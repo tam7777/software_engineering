@@ -146,47 +146,79 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		root=alloc_root(NULL);
 		root->key[0]=key;//root shold contain N,K,N
 		root->chi[0]=(NODE *) leaf;
-		leaf->parent=(NODE *) root;
 		root->chi[1]=(NODE *) fleaf;
+		leaf->parent=(NODE *) root;
 		fleaf->parent=(NODE *) root;
 		root->nkey++;
-		Root =root;//make root the Root and return 
+		Root =(NODE *)root;//make root the Root and return 
 		return root;
 	}
 	
+	NODE *fp;
+	fp=(NODE *)leaf->parent;//set p as the parent of the leaf
+	//couldn't fp->nkey++
+
 	NODE *p;
 	p=alloc_root(NULL);
-	p=(NODE *) leaf->parent;//create p that is the parent of the leaf
-	p->nkey=2;
-
-
-	if(p->nkey<(N-1)){//if p has less then n pointers, if p has the space to put key&ptr
-		for(i=0; i<p->nkey; i++){// insert (K', N') to p
-			if(leaf->key[0]==p->key[i]) break;
-		}
-		
-		p->chi[i+1]=(NODE *) fleaf;
-		p->key[i+1]=key;
-
+	for (i=0; i<(fp->nkey);i++){//careful to add +1 coz num of chi is 1more than key
+		p->key[i]=fp->key[i];
+		p->chi[i]=fp->chi[i];
 	}
 
-	/*
+	p->chi[i]=fp->chi[i];
+	p->nkey=fp->nkey;
+	Root=(NODE *)p;
+
+	if(p->nkey<(N-1)){//if p has less then n pointers, if p has the space to put key&ptr
+
+		// insert (K', N') to p. this part could be cleaner
+		if (key > p->key[p->nkey-1]) {//if the input data is biggest
+
+			for(i=0; i<p->nkey; i++){// insert (K', N') to p
+				if(leaf->key[0]==p->key[i]) break;
+			}
+
+			p->chi[i+2]=(NODE *) fleaf;
+			p->key[i+1]=key;
+
+		}
+
+		else{//if the input data is not the biggest
+			for(i=0; i<p->nkey; i++){
+				if(key<p->key[i]) break;
+			}
+
+			int j;
+			for (j = p->nkey; j > i; j--) {//j is just bigger than the input		
+				p->chi[j+1] = p->chi[j] ;
+				p->key[j] = p->key[j-1] ;
+			}		
+			p->chi[i+1]=(NODE *) fleaf;
+			p->key[i]=key;
+		}
+		p->nkey++;
+		leaf->parent=p;
+		fleaf->parent=p;//the parent of leaf and fleaf is still fp so change the parent
+		//however the parent of the first ptr is still fp
+
+	}
 	
 	else{
 		TEMP *mem;
-		mem=alloc_temp(NULL);
+		mem=alloc_temp();
 		for (i=0; i<p->nkey; i++){
 			mem->key[i]=p->key[i];
 			mem->chi[i]=p->chi[i];
 			mem->nkey++;
 		}//copy p to a block of memory capable of P and (K&N)
+		mem->chi[i]=p->chi[i];
 
 		for(i=0; i<mem->nkey; i++){//insert key and fleaf into mem
 			if(mem->chi[i]==leaf) break;
 		}
 		mem->chi[i+1]=fleaf;
 		mem->key[i]=key;
-		mem->nkey++;		
+		mem->nkey++;
 
 		for(i=0; i<p->nkey; i++){//erase p the key and ptr
 			p->key[i]=0;
@@ -194,26 +226,30 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		}
 		p->nkey=0;
 
-		NODE *fp;
-		fp=alloc_root(NULL);
+		NODE *pd;
+		pd=alloc_root(NULL);
 		for(i=0; i<(mem->nkey+1)/2; i++){//copt TP[n+1/2]to T
 			p->key[i]=mem->key[i];
 			p->chi[i]=mem->chi[i];
 			p->nkey++;
 		}
+		p->chi[i]=mem->chi[i];
 
 		int ffkey=mem->key[(mem->nkey+1)/2];//Let K = T.K(n+1)/2
 
-		for(i=((mem->nkey+1)/2)+1; i<mem->nkey+1; i++){//copt TP[n+1/2]to T
-			fp->key[i]=mem->key[i];
-			fp->chi[i]=mem->chi[i];
-			fp->nkey++;
+		int k=0;
+		for(i=((mem->nkey+1)/2)+1; i<mem->nkey; i++){//copt TP[n+1/2]to T
+			pd->key[k]=mem->key[i];
+			pd->chi[k]=mem->chi[i];
+			pd->nkey++;
+			k++;
 		}
+		pd->chi[k]=mem->chi[i];
 	
-		insert_in_parent(p,ffkey,fp);
+		insert_in_parent(p,ffkey,pd);
 		
 	}
-	*/
+	
 	return 0;
 }
 
@@ -236,7 +272,7 @@ insert(int key, DATA *data)
 	else {//if the node is full 
 
 		NODE *fleaf;//create node L'
-		fleaf=alloc_leaf(NULL);
+		fleaf=alloc_leaf(leaf->parent);
 		
 		TEMP* temp;//create a temporary memory that can hold n pairs
 		temp=alloc_temp();
@@ -316,4 +352,3 @@ main(int argc, char *argv[])
 
 //when inserting a num to t, using insert_in_leaf, can not do it coz
 //cannot 'TEMP'to 'NODE' so created a insert function just for TEMP
-//what do we need alloc_leaf?

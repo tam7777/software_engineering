@@ -1,0 +1,15 @@
+# Counter_non_lock 
+  Naive Implementation
+  No lock implemented so all lock tries to update the counter
+  
+# Counter_pthread_lock 
+  using lock library
+  pthread_mutex_lock
+ 
+# Counter_ttas
+  Using cas, compare the original data and the updated data
+  uses Mutex.compare_exchange_strong
+  
+# counter_fetch_and_add   
+    Using atomic add
+    atomic_fetch_add()

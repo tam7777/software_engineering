@@ -144,22 +144,24 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 	if(leaf==Root){//if leaf is the root	
 		NODE *root;//create new root candidate
 		root=alloc_root(NULL);
-		root->key[0]=key;//root shold contain N,K,N
-		root->chi[0]=(NODE *) leaf;
+		root->key[0]=key;//root 1st key should be the first of fleaf
+		root->chi[0]=(NODE *) leaf;//connect pointers to the 2 lists
 		root->chi[1]=(NODE *) fleaf;
-		leaf->parent=(NODE *) root;
+		leaf->parent=(NODE *) root; //set as a parent
 		fleaf->parent=(NODE *) root;
 		root->nkey++;
 		Root =(NODE *)root;//make root the Root and return 
 		return root;
 	}
-	
+
+	//if leaf is not the root aka not the first parent node
+
 	NODE *fp;
 	fp=(NODE *)leaf->parent;//set p as the parent of the leaf
 	//couldn't fp->nkey++
 
 	NODE *p;
-	p=alloc_root(NULL);
+	p=alloc_root(NULL);//create a new parent candidate copying fp
 	for (i=0; i<(fp->nkey);i++){//careful to add +1 coz num of chi is 1more than key
 		p->key[i]=fp->key[i];
 		p->chi[i]=fp->chi[i];
@@ -203,7 +205,7 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 
 	}
 	
-	else{
+	else{//if parent node is full
 		TEMP *mem;
 		mem=alloc_temp();
 		for (i=0; i<p->nkey; i++){
@@ -245,7 +247,7 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 			k++;
 		}
 		pd->chi[k]=mem->chi[i];
-	
+
 		insert_in_parent(p,ffkey,pd);
 		
 	}
@@ -266,7 +268,7 @@ insert(int key, DATA *data)
 	}//find the node which is close to the key
 	//leaf is the node which the key(input data) should be in
 
-	if (leaf->nkey < (N-1)) {//if the node is not full
+	if (leaf->nkey < (N-1)) {//if the node is not full 
 		insert_in_leaf(leaf, key, data);//insert
 	}
 	else {//if the node is full 
@@ -283,18 +285,18 @@ insert(int key, DATA *data)
 			temp->nkey++;
 		}	
 		
-		insert_in_t(temp,key,data);//insert new ket & ptr to t
+		insert_in_t(temp,key,data);//insert new ket & ptr to temp
 
-		fleaf->chi[N]=leaf->chi[N];//set L'Pn=LPn
-		leaf->chi[N]=(NODE *) fleaf;//set LPn=L'
+		fleaf->chi[N]=leaf->chi[N];//end of fleaf is the same as leaf rn
+		leaf->chi[N]=(NODE *) fleaf;//connect the end of leaf to fleaf
 
-		for(int i=0; i<leaf->nkey; i++){//erase L
+		for(int i=0; i<leaf->nkey; i++){//delete key and pointers and nkey of leaf
 			leaf->key[i]=0;
 			leaf->chi[i]=NULL;
 		}
 		leaf->nkey=0;
 
-		for(int i=0; i<(temp->nkey)/2; i++){//copy TP1 to TK[n/2] to L
+		for(int i=0; i<(temp->nkey)/2; i++){//copy half temp to leaf
 			leaf->key[i]=temp->key[i];
 			leaf->chi[i]=temp->chi[i];
 			leaf->nkey++;
@@ -302,7 +304,7 @@ insert(int key, DATA *data)
 
 		int j=0;
 
-		for(int i=(temp->nkey)/2; i<temp->nkey; i++){//copy TP[n/2] to TKn to L'
+		for(int i=(temp->nkey)/2; i<temp->nkey; i++){//copy last half to fleaf
 			fleaf->key[j]=temp->key[i];
 			fleaf->chi[j]=temp->chi[i];
 			j++;
@@ -341,14 +343,19 @@ main(int argc, char *argv[])
 
 	printf("-----Insert-----\n");
 	begin = cur_time();
+    /*
 	while (true) {
 			insert(interactive(), NULL);
 		print_tree(Root);
+	}*/
+
+    for (int i=1; i<15; i++) {
+			insert(i, NULL);
+            //Place NULL to data, key and data
+		print_tree(Root);
 	}
+
 	end = cur_time();
 
 	return 0;
 }
-
-//when inserting a num to t, using insert_in_leaf, can not do it coz
-//cannot 'TEMP'to 'NODE' so created a insert function just for TEMP

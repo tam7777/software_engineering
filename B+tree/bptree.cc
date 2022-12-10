@@ -140,6 +140,7 @@ alloc_root(NODE *parent)
 NODE *
 insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 {   
+
 	int i;
 	if(leaf==Root){//if leaf is the root	
 		NODE *root;//create new root candidate
@@ -159,7 +160,7 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 	NODE *fp;
 	fp=(NODE *)leaf->parent;//set p as the parent of the leaf
 	//couldn't fp->nkey++
-
+/*
 	NODE *p;
 	p=alloc_root(NULL);//create a new parent candidate copying fp
 	for (i=0; i<(fp->nkey);i++){//careful to add +1 coz num of chi is 1more than key
@@ -168,8 +169,9 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 	}
 
 	p->chi[i]=fp->chi[i];
-	p->nkey=fp->nkey;
-	Root=(NODE *)p;
+	p->nkey=fp->nkey;*/
+	//Root=(NODE *)p;
+	Root=(NODE *)fp
 
 	if(p->nkey<(N-1)){//if p has less then n pointers, if p has the space to put key&ptr
 
@@ -222,7 +224,7 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		mem->key[i]=key;
 		mem->nkey++;
 
-		for(i=0; i<p->nkey; i++){//erase p the key and ptr
+		for(i=0; i<p->nkey; i++){//intialize p the key and ptr
 			p->key[i]=0;
 			p->chi[i]=NULL;
 		}
@@ -230,7 +232,7 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 
 		NODE *pd;
 		pd=alloc_root(NULL);
-		for(i=0; i<(mem->nkey+1)/2; i++){//copt TP[n+1/2]to T
+		for(i=0; i<(mem->nkey+1)/2; i++){//copt half temp to p
 			p->key[i]=mem->key[i];
 			p->chi[i]=mem->chi[i];
 			p->nkey++;
@@ -240,7 +242,7 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		int ffkey=mem->key[(mem->nkey+1)/2];//Let K = T.K(n+1)/2
 
 		int k=0;
-		for(i=((mem->nkey+1)/2)+1; i<mem->nkey; i++){//copt TP[n+1/2]to T
+		for(i=((mem->nkey+1)/2)+1; i<mem->nkey; i++){//copt last half temp to pd
 			pd->key[k]=mem->key[i];
 			pd->chi[k]=mem->chi[i];
 			pd->nkey++;
@@ -248,6 +250,11 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		}
 		pd->chi[k]=mem->chi[i];
 
+		leaf->parent=p;
+		fleaf->parent=pd;
+
+		Root=(NODE *)p;
+		//find the root? correct root?
 		insert_in_parent(p,ffkey,pd);
 		
 	}

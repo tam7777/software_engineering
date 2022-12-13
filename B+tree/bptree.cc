@@ -158,64 +158,52 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 	//if leaf is not the root aka not the first parent node
 
 	NODE *fp;
-	fp=(NODE *)leaf->parent;//set p as the parent of the leaf
-	//couldn't fp->nkey++
-/*
-	NODE *p;
-	p=alloc_root(NULL);//create a new parent candidate copying fp
-	for (i=0; i<(fp->nkey);i++){//careful to add +1 coz num of chi is 1more than key
-		p->key[i]=fp->key[i];
-		p->chi[i]=fp->chi[i];
-	}
+	fp=(NODE *)leaf->parent;//set fp as the parent of the leaf
+	//Root=(NODE *)fp;
 
-	p->chi[i]=fp->chi[i];
-	p->nkey=fp->nkey;*/
-	//Root=(NODE *)p;
-	Root=(NODE *)fp
-
-	if(p->nkey<(N-1)){//if p has less then n pointers, if p has the space to put key&ptr
-
-		// insert (K', N') to p. this part could be cleaner
-		if (key > p->key[p->nkey-1]) {//if the input data is biggest
-
-			for(i=0; i<p->nkey; i++){// insert (K', N') to p
-				if(leaf->key[0]==p->key[i]) break;
+	if(fp->nkey<(N-1)){//if p has less then n pointers, if fp has the space to put key&ptr
+		//Root=(NODE *)fp;
+		// insert (leaf, fleaf) to fp. this part could be cleaner
+		if (key > fp->key[fp->nkey-1]) {//if the input data is biggest
+			for(i=0; i<fp->nkey; i++){// insert (leaf, fleaf) to fp
+				if(leaf->key[0]==fp->key[i]) break;
 			}
-
-			p->chi[i+2]=(NODE *) fleaf;
-			p->key[i+1]=key;
+			cout<<"new key should be "<<i<<endl;
+			fp->chi[i+2]=(NODE *) fleaf;
+			fp->key[i+1]=key;
 
 		}
 
 		else{//if the input data is not the biggest
-			for(i=0; i<p->nkey; i++){
-				if(key<p->key[i]) break;
+			for(i=0; i<fp->nkey; i++){
+				if(key<fp->key[i]) break;
 			}
 
 			int j;
-			for (j = p->nkey; j > i; j--) {//j is just bigger than the input		
-				p->chi[j+1] = p->chi[j] ;
-				p->key[j] = p->key[j-1] ;
+			for (j = fp->nkey; j > i; j--) {//j is just bigger than the input		
+				fp->chi[j+1] = fp->chi[j] ;
+				fp->key[j] = fp->key[j-1] ;
 			}		
-			p->chi[i+1]=(NODE *) fleaf;
-			p->key[i]=key;
+			fp->chi[i+1]=(NODE *) fleaf;
+			fp->key[i]=key;
 		}
-		p->nkey++;
-		leaf->parent=p;
-		fleaf->parent=p;//the parent of leaf and fleaf is still fp so change the parent
+		fp->nkey++;
+		leaf->parent=(NODE *)fp;
+		fleaf->parent=(NODE *)fp;//the parent of leaf and fleaf is still fp so change the parent
 		//however the parent of the first ptr is still fp
 
 	}
 	
 	else{//if parent node is full
+		//Root=(NODE *)fp;
 		TEMP *mem;
 		mem=alloc_temp();
-		for (i=0; i<p->nkey; i++){
-			mem->key[i]=p->key[i];
-			mem->chi[i]=p->chi[i];
+		for (i=0; i<fp->nkey; i++){
+			mem->key[i]=fp->key[i];
+			mem->chi[i]=fp->chi[i];
 			mem->nkey++;
 		}//copy p to a block of memory capable of P and (K&N)
-		mem->chi[i]=p->chi[i];
+		mem->chi[i]=fp->chi[i];
 
 		for(i=0; i<mem->nkey; i++){//insert key and fleaf into mem
 			if(mem->chi[i]==leaf) break;
@@ -224,20 +212,20 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		mem->key[i]=key;
 		mem->nkey++;
 
-		for(i=0; i<p->nkey; i++){//intialize p the key and ptr
-			p->key[i]=0;
-			p->chi[i]=NULL;
+		for(i=0; i<fp->nkey; i++){//intialize p the key and ptr
+			fp->key[i]=0;
+			fp->chi[i]=NULL;
 		}
-		p->nkey=0;
+		fp->nkey=0;
 
 		NODE *pd;
 		pd=alloc_root(NULL);
 		for(i=0; i<(mem->nkey+1)/2; i++){//copt half temp to p
-			p->key[i]=mem->key[i];
-			p->chi[i]=mem->chi[i];
-			p->nkey++;
+			fp->key[i]=mem->key[i];
+			fp->chi[i]=mem->chi[i];
+			fp->nkey++;
 		}
-		p->chi[i]=mem->chi[i];
+		fp->chi[i]=mem->chi[i];
 
 		int ffkey=mem->key[(mem->nkey+1)/2];//Let K = T.K(n+1)/2
 
@@ -250,12 +238,10 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		}
 		pd->chi[k]=mem->chi[i];
 
-		leaf->parent=p;
+		leaf->parent=fp;
 		fleaf->parent=pd;
 
-		Root=(NODE *)p;
-		//find the root? correct root?
-		insert_in_parent(p,ffkey,pd);
+		insert_in_parent(fp,ffkey,pd);
 		
 	}
 	
@@ -320,7 +306,6 @@ insert(int key, DATA *data)
 		int fkey=fleaf->key[0];
 
 		insert_in_parent(leaf,fkey,fleaf);
-		
 	}
 }
 
@@ -356,10 +341,14 @@ main(int argc, char *argv[])
 		print_tree(Root);
 	}*/
 
-    for (int i=1; i<15; i++) {
+    for (int i=1; i<17; i++) {
 			insert(i, NULL);
             //Place NULL to data, key and data
-		print_tree(Root);
+			for(int i=0; i<3; i++){
+				cout<<"this is the root"<<Root->chi[i]<<endl;
+				cout<<"this is the root"<<Root->key[i]<<endl;
+			}
+			print_tree(Root);
 	}
 
 	end = cur_time();

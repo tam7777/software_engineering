@@ -165,12 +165,8 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		//Root=(NODE *)fp;
 		// insert (leaf, fleaf) to fp. this part could be cleaner
 		if (key > fp->key[fp->nkey-1]) {//if the input data is biggest
-			for(i=0; i<fp->nkey; i++){// insert (leaf, fleaf) to fp
-				if(leaf->key[0]==fp->key[i]) break;
-			}
-			cout<<"new key should be "<<i<<endl;
-			fp->chi[i+2]=(NODE *) fleaf;
-			fp->key[i+1]=key;
+			fp->chi[fp->nkey+1]=(NODE *) fleaf;
+			fp->key[fp->nkey]=key;
 
 		}
 
@@ -341,13 +337,9 @@ main(int argc, char *argv[])
 		print_tree(Root);
 	}*/
 
-    for (int i=1; i<17; i++) {
+    for (int i=1; i<100; i++) {
 			insert(i, NULL);
             //Place NULL to data, key and data
-			for(int i=0; i<3; i++){
-				cout<<"this is the root"<<Root->chi[i]<<endl;
-				cout<<"this is the root"<<Root->key[i]<<endl;
-			}
 			print_tree(Root);
 	}
 

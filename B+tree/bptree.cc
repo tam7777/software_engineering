@@ -159,10 +159,8 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 
 	NODE *fp;
 	fp=(NODE *)leaf->parent;//set fp as the parent of the leaf
-	//Root=(NODE *)fp;
 
 	if(fp->nkey<(N-1)){//if p has less then n pointers, if fp has the space to put key&ptr
-		//Root=(NODE *)fp;
 		// insert (leaf, fleaf) to fp. this part could be cleaner
 		if (key > fp->key[fp->nkey-1]) {//if the input data is biggest
 			fp->chi[fp->nkey+1]=(NODE *) fleaf;
@@ -185,13 +183,13 @@ insert_in_parent(NODE *leaf,int key, NODE *fleaf)
 		}
 		fp->nkey++;
 		leaf->parent=(NODE *)fp;
-		fleaf->parent=(NODE *)fp;//the parent of leaf and fleaf is still fp so change the parent
+		fleaf->parent=(NODE *)fp;//need(NODE*)otherwise can't use
+		//the parent of leaf and fleaf is still fp so change the parent
 		//however the parent of the first ptr is still fp
 
 	}
 	
 	else{//if parent node is full
-		//Root=(NODE *)fp;
 		TEMP *mem;
 		mem=alloc_temp();
 		for (i=0; i<fp->nkey; i++){
@@ -337,10 +335,10 @@ main(int argc, char *argv[])
 		print_tree(Root);
 	}*/
 
-    for (int i=1; i<100; i++) {
+    for (int i=1; i<=10000000; i++) {
 			insert(i, NULL);
             //Place NULL to data, key and data
-			print_tree(Root);
+			//print_tree(Root);
 	}
 
 	end = cur_time();

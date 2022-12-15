@@ -396,21 +396,21 @@ main(int argc, char *argv[])
 	for(int i=0; i<100; i++){
 		search_key(Root,(&record_set[i])->key);
 	}
-
+	/*
 	for(int i=0;i<100; i++ ){
 		cout<<(&record_set[i])->val;
 	}
-	cout<<endl;
+	cout<<endl;*/
 
 	for(int i=0; i<100; i++){
 		update(Root,&record_set[i]);
 	}
-
+	/*
 	for(int i=0; i<100; i++){
 		cout<<(&record_set[i])->val;
 	}
 
-	cout<<endl;
+	cout<<endl;*/
 
 	end = cur_time();
 

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <mutex> 
 using namespace std;
-#define NUMBER 100
+#define NUMBER 10000000
 
 struct timeval
 cur_time(void)
